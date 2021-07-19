@@ -1,0 +1,622 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is Stizy API. This Api handle data application.Soon you can use the api key `special-key` to test the authorization filters.",
+    "version": "1.0.0",
+    "title": "Stiry",
+    "contact": {
+      "email": "imed.saoud@hetic.net"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "localhost:4040",
+  "basePath": "/api/v1.0.0",
+  "tags": [
+    {
+      "name": "auth",
+      "description": "API for auth in the system"
+    },
+    {
+      "name": "user",
+      "description": "Everything about users"
+    },
+    {
+      "name": "project",
+      "description": "Everything about projects"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/user": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Create user",
+        "description": "This can only be done by the plateform admin.",
+        "operationId": "createUser",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Created user object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "successful operation"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get users",
+        "description": "",
+        "operationId": "getUsers",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "503": {
+            "description": "503 Service Unavailable"
+          }
+        }
+      }
+    },
+    "/user/findByEmail": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Find user by email",
+        "description": "",
+        "operationId": "getUsersByEmail",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "The email that needs to be fetched.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Invalid email"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "503": {
+            "description": "503 Service Unavailable"
+          }
+        }
+      }
+    },
+    "/user/{userId}": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get user by userID",
+        "description": "",
+        "operationId": "getUserByID",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The user Id that needs to be fetched.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Invalid userId supplied"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Update user",
+        "description": "This can only be done by the logged in user.",
+        "operationId": "updateUser",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The user Id that needs to be fetched.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Updated user object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid user supplied"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Delete user",
+        "description": "This can only be done by the logged admin.",
+        "operationId": "deleteUser",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The userId that needs to be deleted",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid username supplied"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logs user into the system",
+        "description": "",
+        "operationId": "loginUser",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "auth",
+            "in": "body",
+            "description": "User auth details",
+            "schema": {
+              "type": "object",
+              "required": [
+                "email",
+                "password"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "string"
+            },
+            "headers": {
+              "X-Rate-Limit": {
+                "type": "integer",
+                "format": "int32",
+                "description": "calls per hour allowed by the user"
+              },
+              "X-Expires-After": {
+                "type": "string",
+                "format": "date-time",
+                "description": "date in UTC when token expires"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid username/password supplied"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logs out current logged in user session",
+        "description": "",
+        "operationId": "logoutUser",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/project": {
+      "post": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Create a new project",
+        "description": "",
+        "operationId": "addProject",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "consumes": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Project object that needs to be added to the store",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Project"
+            }
+          }
+        ],
+        "responses": {
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Get all projects",
+        "description": "",
+        "operationId": "getProjects",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Project"
+            }
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        }
+      }
+    },
+    "/project/{projectId}": {
+      "get": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Get project by Id",
+        "description": "",
+        "operationId": "getprojectById",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "projectId",
+            "description": "ID of project to return",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Project"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "project not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Update an existing project",
+        "description": "This can only be done by project owner or co-worker with edit permission",
+        "operationId": "updateProjectId",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "description": "ID of project to return",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Updated project object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Project"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid user supplied"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Delete project",
+        "description": "",
+        "operationId": "deleteProject",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "projectId",
+            "description": "ID of project to return",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Project not found"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "marketplace_auth": {
+      "type": "oauth2",
+      "authorizationUrl": "http://petstore.swagger.io/oauth/dialog",
+      "flow": "implicit",
+      "scopes": {
+        "write:pets": "modify pets in your account",
+        "read:pets": "read your pets"
+      }
+    },
+    "api_key": {
+      "type": "apiKey",
+      "name": "special-key",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "Project": {
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ownerId": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "shortDescription": {
+          "type": "string"
+        },
+        "longDescription": {
+          "type": "string"
+        },
+        "userIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "type": "string",
+          "description": "project status",
+          "enum": [
+            "available",
+            "in progress"
+          ]
+        },
+        "algoIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "versionIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fileIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updateAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "analysis": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "xml": {
+        "name": "Project"
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "socialReason": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "pwd": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "role": {
+          "type": "string"
+        },
+        "watchProjectIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "analytics": {
+          "type": "object",
+          "properties": {
+            "nConnection": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "items": {
+            "type": "array"
+          }
+        }
+      },
+      "xml": {
+        "name": "User"
+      }
+    }
+  }
+}
