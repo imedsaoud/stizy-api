@@ -1,6 +1,6 @@
 {
-  "name": "mean",
-  "version": "2.0.2",
+  "name": "stizy",
+  "version": "0.0.4",
   "license": "MIT",
   "scripts": {
     "serve": "node server",
@@ -14,7 +14,8 @@
   },
   "private": true,
   "dependencies": {
-    "axios": "^0.21.0",
+    "@influxdata/influxdb-client": "^1.15.0",
+    "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.18.2",
     "chai": "^4.2.0",
@@ -39,7 +40,7 @@
     "joi": "^13.3.0",
     "jsonwebtoken": "^8.2.1",
     "method-override": "^2.3.10",
-    "mongoose": "^5.7.7",
+    "mongoose": "^5.13.3",
     "mongoose-auto-increment": "^5.0.1",
     "morgan": "^1.9.1",
     "nodemon": "^2.0.6",
