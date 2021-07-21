@@ -17,7 +17,7 @@ const util = () => {
      */
     const mapPlacesWithRawData = (places, influxdbMetadata) => {
         const influxdbDataByNodes = influxdbMetadata
-            .map((d) => ({ [d.sensor_id]: d._value, nodeId: d.nodeId }))
+            .map((d) => ({ [d.sensor_id]: d._value, nodeId: d.nodeId })) // create dictionnary with nodeId as accessor
             .reduce((acc, d) => {
                 if (!acc[d.nodeId]) acc[d.nodeId] = [];
                 acc[d.nodeId].push(d);
