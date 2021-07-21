@@ -1,11 +1,10 @@
-const client = require('../config/influx-db'),
-    Place = require('../models/place.model'),
+const Place = require('../models/place.model'),
     PlaceUtil = require('../utils/place.util')(),
-    Campus = require('../models/campus.model');
+    Campus = require('../models/campus.model'),
+    influxDbService = require('../services/influxdb.service')();
 
 
 const controller = () => {
-
 
     /**
      * @param req
@@ -17,11 +16,12 @@ const controller = () => {
         const { id } = req.params;
         if (id) {
             try {
+                /** @type {Campus} */
                 const campusWithPlaces = await Campus.findById(id).populate('places').lean();
                 const places = campusWithPlaces.places;
 
                 const nodeIds = places.map(p => p.nodeId);
-                const influxMetadata = await getLastSensorValuesByNodeIds(nodeIds);
+                const influxMetadata = await influxDbService.getLastSensorValuesByNodeIds(nodeIds);
 
                 const mappedPlaces = PlaceUtil.mapPlacesWithRawData(places, influxMetadata);
                 res.send(mappedPlaces);
@@ -31,28 +31,6 @@ const controller = () => {
         } else {
             res.status(400).json({ status: 400, error: "Bad Request" });
         }
-    }
-
-
-    /**
-     * @param {NumberConstructor[]} nodeIds
-     * @return {Promise<Array<*>>}
-     */
-    const getLastSensorValuesByNodeIds = async nodeIds => {
-        const org = 'yahia.lamri@hetic.net'
-        const queryApi = client.getQueryApi(org);
-        const mappedNodeIdQuery = nodeIds.map(id => `r["nodeId"] == "${id}"`).join(' or ');
-
-        const fluxQuery = `
-            from(bucket: "stizy") 
-                |> range(start: -2h) 
-                |> filter(fn: (r) => r["_measurement"] == "stizyData")
-                |> filter(fn: (r) => r["_field"] == "data_value")
-                |> filter(fn: (r) => ${mappedNodeIdQuery})
-                |> last()
-        `;
-
-        return queryApi.collectRows(fluxQuery);
     }
 
     return {

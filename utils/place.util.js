@@ -13,10 +13,10 @@ const util = () => {
      * Map rooms with raw data from influxdb
      * @param influxdbMetadata
      * @param {Array<Place>} places
-     * @return {{[p: string]: *}[]}
+     * @return {*}
      */
     const mapPlacesWithRawData = (places, influxdbMetadata) => {
-        const influxdbDataByNodes = influxdbMetadata.map((d) => ({ [d.sensor_id]: d._value, nodeId: d.nodeId }));
+        const influxdbDataByNodes = influxdbMetadata.map(d => ({ [d.sensor_id]: d._value, nodeId: d.nodeId }));
         const groupedData = groupBy(influxdbDataByNodes, 'nodeId');
         return places.map(place => {
             return {
