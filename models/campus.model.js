@@ -7,7 +7,7 @@ const CampusSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Place'
     }]
-}, { versionKey: false, timestamps: true });
+}, { collection: 'Campus', versionKey: false, timestamps: true });
 
 
 module.exports = mongoose.model('Campus', CampusSchema);

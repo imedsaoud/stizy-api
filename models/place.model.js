@@ -12,7 +12,7 @@ const PlaceSchema = new mongoose.Schema({
         enum: ['whiteboard', 'projector', 'computer', 'speaker']
     }],
     nodeId: Number, // le node pour recup les infos sur influx db
-}, { versionKey: false, timestamps: true });
+}, { collection: 'Place', versionKey: false, timestamps: true });
 
 
 module.exports = mongoose.model('Place', PlaceSchema);

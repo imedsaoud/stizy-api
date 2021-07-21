@@ -12,7 +12,7 @@ const UniversitySchema = new mongoose.Schema({
     //     type: mongoose.Schema.Types.ObjectId,
     //     ref: 'Place'
     // }]
-}, { versionKey: false, timestamps: true });
+}, { collection: 'University', versionKey: false, timestamps: true });
 
 
 module.exports = mongoose.model('University', UniversitySchema);

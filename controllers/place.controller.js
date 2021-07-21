@@ -16,7 +16,7 @@ const controller = () => {
         const { id } = req.params;
         if (id) {
             try {
-                const campusWithPlaces = await Campus.findOne({ _id: '60f59165105fa7ad858b82ec' });
+                const campusWithPlaces = await Campus.find({});
                 console.log('campusWithPlaces : ', campusWithPlaces);
                 // faire une boucle pour aller requeter chaque salle
                 // const influxMetaData = await getLastSensorValuesByNodeId() // example
