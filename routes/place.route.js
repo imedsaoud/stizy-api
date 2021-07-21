@@ -3,6 +3,8 @@ const placeController = require('../controllers/place.controller')();
 
 const router = express.Router();
 
-router.route('/:id').get(placeController.findByCampusId)
+router.route('/:campusId').get(placeController.findByCampusId);
+
+router.route('/favorite/:id').patch(placeController.manageFav);
 
 module.exports = router;

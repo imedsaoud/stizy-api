@@ -24,11 +24,13 @@ const UserSchema = new mongoose.Schema({
     },
     visitedPlaces: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Place'
+        ref: 'Place',
+        unique: true
     }],
     favoritePlaces: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Place'
+        ref: 'Place',
+        unique: true
     }],
     hashedPassword: {
         type: String,
