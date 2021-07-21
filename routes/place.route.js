@@ -3,6 +3,6 @@ const placeController = require('../controllers/place.controller')();
 
 const router = express.Router();
 
-router.route('/:campusId').get(placeController.findByCampusId)
+router.route('/:id').get(placeController.findByCampusId)
 
 module.exports = router;

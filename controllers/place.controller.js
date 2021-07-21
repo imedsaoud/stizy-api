@@ -13,16 +13,17 @@ const controller = () => {
      * @returns {Promise<void>}
      */
     const findByCampusId = async (req, res, next) => {
-        const { campusId } = req.params;
-        if (campusId) {
+        const { id } = req.params;
+        if (id) {
             try {
-                const campusWithPlaces = await Campus.findById(campusId).populate({ path: 'places' });
-                const places = campusWithPlaces.places;
+                const campusWithPlaces = await Campus.findOne({ _id: '60f59165105fa7ad858b82ec' });
+                console.log('campusWithPlaces : ', campusWithPlaces);
                 // faire une boucle pour aller requeter chaque salle
-                const influxMetaData = await getLastSensorValuesByNodeId() // example
-                const mappedData = influxMetaData.map((d) => ({ [d.sensor_id]: d._value, nodeId: d.nodeId }));
-                res.json(mappedData);
+                // const influxMetaData = await getLastSensorValuesByNodeId() // example
+                // const mappedData = influxMetaData.map((d) => ({ [d.sensor_id]: d._value, nodeId: d.nodeId }));
+                // res.json(mappedData);
             } catch (e) {
+                console.log(e);
                 const error = " Not Found; Requested resource could not be found"
                 const status = 404
                 res.status(status).json({ status: status, error: error.toString() });
