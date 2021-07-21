@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.route('/:campusId').get(placeController.findByCampusId);
 
-router.route('/favorite/:id').patch(placeController.manageFav);
+router.route('/favorite/:id').post(placeController.manageFav);
 
 module.exports = router;
