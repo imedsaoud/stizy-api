@@ -3,10 +3,10 @@
   "version": "0.0.4",
   "license": "MIT",
   "scripts": {
-    "serve": "node ./",
-    "start": "nodemon ./",
-    "build": "node ./",
-    "test": "mocha -R spec --timeout 10000 --exit"
+    "dev": "nodemon ./",
+    "start": "node ./",
+
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false && npm install --prefix client && npm run build --prefix client"
   },
   "engines": {
     "node": "13.14.0",
