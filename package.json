@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "nodemon ./",
     "start": "node ./",
-
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false && npm install --prefix client && npm run start --prefix client"
+    "heroku-postbuild": "npm run start "
   },
   "engines": {
     "node": "13.14.0",
