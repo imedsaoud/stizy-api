@@ -4,10 +4,14 @@ const UniversitySchema = new mongoose.Schema({
     name: String,
     emailExtentions: [String],
     address: String,
-    places: [{
+    campuses: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Place'
-    }]
+        ref: 'Campus'
+    }],
+    // places: [{a
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Place'
+    // }]
 }, { versionKey: false, timestamps: true });
 
 
