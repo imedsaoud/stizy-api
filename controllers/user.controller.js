@@ -9,7 +9,6 @@ const userSchema = Joi.object({
   email: Joi.string().email(),
   role: Joi.string(),
   password: Joi.string(),
-  repeatPassword: Joi.string().valid(Joi.ref('password')),
 })
 
 async function insertUser(user,res) {
@@ -48,7 +47,6 @@ async function getUserById(userId) {
   return User.findOne({"userId":userId},{"loggedAt":0})
 }
 async function getUserByEmail(email) {
-  console.log('===============userId')
   return User.findOne({"email":email},{"loggedAt":0})
 }
 async function deleteUserById(userId) {
