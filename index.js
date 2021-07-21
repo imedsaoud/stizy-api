@@ -8,19 +8,13 @@ const httpsServer = require('./config/express');
 // module.parent check is required to support mocha watch
 // src: https://github.com/mochajs/mocha/issues/1912
 if (!module.parent && config.https) {
-
-  //httpServer.listen(80, () => {
-  //	console.log('HTTP Server running on port 80');
-  //});
   httpsServer.listen(config.port, () => {
-    console.log('HTTPS Server running on port 443');
+    console.log(`HTTPS Server running on port ${config.port}`);
   });  
 }else{
-
-  app.listen(config.port, () => {
+  app.listen(config.port || 4040, () => {
     console.info(`server started on port ${config.port} (${config.env})`);
   });
-
 }
 
 module.exports = app;

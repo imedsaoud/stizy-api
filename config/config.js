@@ -25,7 +25,7 @@ const envVarsSchema = Joi.object({
     .default(false),    
     URI: Joi.string()
     .default('http://0.0.0.0'),       
-  API_PORT: Joi.number()
+  PORT: Joi.number()
     .default(4040),
     JWT_SECRET: Joi.string().required()
     .description('JWT Secret required to sign'),
@@ -48,7 +48,7 @@ if (error) {
 const config = {
   https:envVars.HTTPS,
   env: envVars.NODE_ENV,
-  port: envVars.API_PORT,
+  port: envVars.PORT,
   jwtSecret: envVars.JWT_SECRET,
   mongooseDebug: envVars.MONGOOSE_DEBUG,
   mongo: {
