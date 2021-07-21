@@ -16,21 +16,28 @@ const util = () => {
      * @return {{[p: string]: *}[]}
      */
     const mapPlacesWithRawData = (places, influxdbMetadata) => {
-        const influxdbDataByNodes = influxdbMetadata
-            .map((d) => ({ [d.sensor_id]: d._value, nodeId: d.nodeId })) // create dictionnary with nodeId as accessor
-            .reduce((acc, d) => {
-                if (!acc[d.nodeId]) acc[d.nodeId] = [];
-                acc[d.nodeId].push(d);
-                delete d.nodeId;
-                return acc;
-            }, {});
-
+        const influxdbDataByNodes = influxdbMetadata.map((d) => ({ [d.sensor_id]: d._value, nodeId: d.nodeId }));
+        const groupedData = groupBy(influxdbDataByNodes, 'nodeId');
         return places.map(place => {
             return {
                 ...place,
-                ...Object.assign({}, ...influxdbDataByNodes[place.nodeId])
+                ...Object.assign({}, ...groupedData[place.nodeId])
             }
         });
+    }
+
+    /**
+     * create dictionnary with key as accessor
+     * @param arr
+     * @param key
+     * @return {*}
+     */
+    const groupBy = (arr, key) => {
+        return arr.reduce((acc, elem) => {
+            (acc[elem[key]] = acc[elem[key]] || []).push(elem);
+            delete elem[key];
+            return acc;
+        }, {});
     }
 
 
