@@ -1,6 +1,7 @@
-const client = require('../config/influx-db');
-const Place = require('../models/place.model');
-const Campus = require('../models/campus.model');
+const client = require('../config/influx-db'),
+    Place = require('../models/place.model'),
+    PlaceUtil = require('../utils/place.util')(),
+    Campus = require('../models/campus.model');
 
 
 const controller = () => {
@@ -16,18 +17,16 @@ const controller = () => {
         const { id } = req.params;
         if (id) {
             try {
-                const campusWithPlaces = await Campus.findById(id).populate('places');
+                const campusWithPlaces = await Campus.findById(id).populate('places').lean();
                 const places = campusWithPlaces.places;
-                console.log('places : ', places);
-                // faire une boucle pour aller requeter chaque salle
-                // const influxMetaData = await getLastSensorValuesByNodeId() // example
-                // const mappedData = influxMetaData.map((d) => ({ [d.sensor_id]: d._value, nodeId: d.nodeId }));
-                // res.json(mappedData);
+
+                const nodeIds = places.map(p => p.nodeId);
+                const influxMetadata = await getLastSensorValuesByNodeIds(nodeIds);
+
+                const mappedPlaces = PlaceUtil.mapPlacesWithRawData(places, influxMetadata);
+                res.send(mappedPlaces);
             } catch (e) {
-                console.log(e);
-                const error = " Not Found; Requested resource could not be found"
-                const status = 404
-                res.status(status).json({ status: status, error: error.toString() });
+                res.status(404).json({ status: 404, error: "Not Found. Requested resource could not be found" });
             }
         } else {
             res.status(400).json({ status: 400, error: "Bad Request" });
@@ -36,19 +35,20 @@ const controller = () => {
 
 
     /**
-     * @param {number} nodeId
+     * @param {NumberConstructor[]} nodeIds
      * @return {Promise<Array<*>>}
      */
-    const getLastSensorValuesByNodeId = async nodeId => {
+    const getLastSensorValuesByNodeIds = async nodeIds => {
         const org = 'yahia.lamri@hetic.net'
         const queryApi = client.getQueryApi(org);
+        const mappedNodeIdQuery = nodeIds.map(id => `r["nodeId"] == "${id}"`).join(' or ');
 
         const fluxQuery = `
             from(bucket: "stizy") 
                 |> range(start: -2h) 
                 |> filter(fn: (r) => r["_measurement"] == "stizyData")
                 |> filter(fn: (r) => r["_field"] == "data_value")
-                |> filter(fn: (r) => r["nodeId"] == "${nodeId}")
+                |> filter(fn: (r) => ${mappedNodeIdQuery})
                 |> last()
         `;
 
@@ -56,8 +56,7 @@ const controller = () => {
     }
 
     return {
-        findByCampusId,
-        getLastSensorValuesByNodeId
+        findByCampusId
     }
 }
 
