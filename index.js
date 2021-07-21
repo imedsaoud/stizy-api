@@ -9,17 +9,17 @@ const httpsServer = require('./config/express');
 // src: https://github.com/mochajs/mocha/issues/1912
 if (!module.parent && config.https) {
 
-  //httpServer.listen(80, () => {
-  //	console.log('HTTP Server running on port 80');
-  //});
-  httpsServer.listen(config.port, () => {
-    console.log('HTTPS Server running on port 443');
-  });  
-}else{
+    //httpServer.listen(80, () => {
+    //	console.log('HTTP Server running on port 80');
+    //});
+    httpsServer.listen(config.port, () => {
+        console.log('HTTPS Server running on port 443');
+    });
+} else {
 
-  app.listen(config.port, () => {
-    console.info(`server started on port ${config.port} (${config.env})`);
-  });
+    app.listen(config.port, () => {
+        console.info(`server started on port ${config.port} (${config.env})`);
+    });
 
 }
 

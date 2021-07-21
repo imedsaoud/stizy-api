@@ -24,29 +24,29 @@ console.log(config)
 app.use(compression());
 
 if (config.env === 'development') {
-  app.use(logger('dev'));
+    app.use(logger('dev'));
 }
 
 // Choose what frontend framework to serve the dist from
 var distDir = '../../dist/';
-if (config.frontend == 'react'){
-  distDir ='../../node_modules/material-dashboard-react/dist'
- }else{
-  distDir ='../../dist/' ;
- }
+if (config.frontend == 'react') {
+    distDir = '../../node_modules/material-dashboard-react/dist'
+} else {
+    distDir = '../../dist/';
+}
 
 
 app.use(express.static(path.join(__dirname, distDir)))
 app.use(/^((?!(api)).)*/, (req, res) => {
-  res.sendFile(path.join(__dirname, distDir + '/index.html'));
+    res.sendFile(path.join(__dirname, distDir + '/index.html'));
 });
 
 console.log(distDir);
- //React server
+//React server
 app.use(express.static(path.join(__dirname, '../../node_modules/material-dashboard-react/dist')))
 app.use(/^((?!(api)).)*/, (req, res) => {
-res.sendFile(path.join(__dirname, '../../dist/index.html'));
-}); 
+    res.sendFile(path.join(__dirname, '../../dist/index.html'));
+});
 
 
 app.use(bodyParser.json());
@@ -76,41 +76,31 @@ app.use((req, res, next) => {
 });
 
 
-
 // error handler, send stacktrace only during development
 app.use((err, req, res, next) => {
-
-  // customize Joi validation errors
-  if (err.isJoi) {
-    err.message = err.details.map(e => e.message).join("; ");
-    err.status = 400;
-  }
-
-  res.status(err.status || 500).json({
-    message: err.message
-  });
-  next(err);
+    res.status(err.status || 500).json({
+        message: err.message
+    });
+    next(err);
 });
 
 module.exports = app
 
 if (config.https) {
+    // Certificate
+    const privateKey = fs.readFileSync('/home/ubuntu/privkey.pem', 'utf8');
+    const certificate = fs.readFileSync('/home/ubuntu/cert.pem', 'utf8');
+    const ca = fs.readFileSync('/home/ubuntu/chain.pem', 'utf8');
 
-  // Certificate
-  const privateKey = fs.readFileSync('/home/ubuntu/privkey.pem', 'utf8');
-  const certificate = fs.readFileSync('/home/ubuntu/cert.pem', 'utf8');
-  const ca = fs.readFileSync('/home/ubuntu/chain.pem', 'utf8');
-
-  const credentials = {
-    key: privateKey,
-    cert: certificate,
-    ca: ca
+    const credentials = {
+        key: privateKey,
+        cert: certificate,
+        ca: ca
     };
-  // Starting both http & https servers
-  httpServer =http.createServer(app);
-  httpsServer= https.createServer(credentials, app);
-  
-  module.exports = httpServer ;
-  module.exports = httpsServer;
-};
+    // Starting both http & https servers
+    httpServer = http.createServer(app);
+    httpsServer = https.createServer(credentials, app);
 
+    module.exports = httpServer;
+    module.exports = httpsServer;
+}

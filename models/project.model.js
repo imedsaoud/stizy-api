@@ -4,30 +4,30 @@ const ProjectSchema = new mongoose.Schema({
   projectId: {
     type: String,
     required: true,
-    unique: false
+    unique: false,
   },
   createdAt: {
     type: Date,
     default: Date.now,
-    required: true
+    required: true,
   },
   ownerId: {
     type: String,
     default: '0',
-    required: true
+    required: true,
   },
   title: {
     type: String,
     required: true,
-    unique: false
+    unique: false,
   },
   shortDescription: {
     type: String,
-    required: true
+    required: true,
   },
   longDescription: {
     type: String,
-    required: true
+    required: true,
   },
   status: {
     type: String,
@@ -35,22 +35,16 @@ const ProjectSchema = new mongoose.Schema({
   },
   userIds: {
     type: Array,
-    required: true
+    required: true,
   },
   updatedAt: {
     type: Array,
-    required: true
+    required: true,
   },
   useCaseId: {
     type: String,
-    required: true
+    required: true,
   },
-},{
-  versionKey: false
-});
+},{ versionKey: false });
 
 module.exports = mongoose.model('Project', ProjectSchema);
-
-
-
-
