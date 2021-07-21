@@ -10,4 +10,4 @@ const password = 'my-password'
 
 const client = new InfluxDB({ url: 'https://europe-west1-1.gcp.cloud2.influxdata.com', token: token })
 
-module.exports = client,org,bucket,token,username,password;
+module.exports = client, org, bucket, token, username, password;
