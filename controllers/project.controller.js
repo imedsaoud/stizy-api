@@ -50,7 +50,7 @@ async function getProjects() {
 
   let org = 'yahia.lamri@hetic.net'
   const queryApi = client.getQueryApi(org)
-  const fluxQuery = 'from(bucket: "stizy")|> range(start: -1h) |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer")|> filter(fn: (r) => r["_field"] == "data_value")|> filter(fn: (r) => r["sensor_id"] == "112" or r["sensor_id"] == "114" or r["sensor_id"] == "122" or r["sensor_id"] == "107" or r["sensor_id"] == "121")'
+  const fluxQuery = 'from(bucket: "stizy")|> range(start: -1h)|> filter(fn: (r) => r["Node_ID"] == "12345678")|> filter(fn: (r) => r["sensor_id"] == "Bruit" or r["sensor_id"] == "Humidite" or r["sensor_id"] == "Nombre de personne" or r["sensor_id"] == "Luminosite" or r["sensor_id"] == "Temperature")|> yield(name: "mean")'
   queryApi.queryRows(fluxQuery, {
     next(row, tableMeta) {
       const o = tableMeta.toObject(row)
@@ -58,7 +58,7 @@ async function getProjects() {
       console.log(
         `${o._time} ${o._measurement} in '${o.location}' (${o.example}): ${o._field}=${o._value}`
       )
-      
+
     },
     error(error) {
       console.error(error)

@@ -3,9 +3,9 @@
   "version": "0.0.4",
   "license": "MIT",
   "scripts": {
-    "serve": "node server",
+    "serve": "node steasy",
     "start": "nodemon steasy",
-    "build": "node server",
+    "build": "node steasy",
     "test": "mocha -R spec --timeout 10000 --exit"
   },
   "engines": {
