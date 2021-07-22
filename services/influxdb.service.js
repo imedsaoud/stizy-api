@@ -14,11 +14,11 @@ const service = () => {
 
         const fluxQuery = `
             from(bucket: "stizy") 
-                |> range(start: -2h) 
+                |> range(start: -1h) 
                 |> filter(fn: (r) => r["_measurement"] == "stizyData")
                 |> filter(fn: (r) => r["_field"] == "data_value")
                 |> filter(fn: (r) => ${mappedNodeIdQuery})
-                |> last()
+                |> yield(name: "median")
         `;
 
         return queryApi.collectRows(fluxQuery);

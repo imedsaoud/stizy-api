@@ -7,6 +7,41 @@ const Place = require('../models/place.model'),
 
 const controller = () => {
 
+
+    /**
+     * On home page
+     * @param req
+     * @param res
+     * @param next
+     * @return {Promise<void>}
+     */
+    const findFavsByUserId = async (req, res, next) => {
+        const { userId, campusId } = req.params;
+        if (userId && campusId) {
+            try {
+                const userWithFavs = await User.findById(userId).populate('favortiePlaces');
+                const places = userWithFavs.places;
+
+                const nodeIds = places.map(p => p.nodeId);
+                const influxMetadata = await influxDbService.getLastSensorValuesByNodeIds(nodeIds);
+
+                const mappedPlaces = PlaceUtil.mapPlacesWithRawData(places, influxMetadata);
+                const counts = {
+                    empty: 0,
+                    quiet: 0,
+                    availableMoreThanOneHour: 0,
+                    withProjector: 0
+                };
+                res.send({ places: mappedPlaces, counts });
+            } catch (e) {
+                res.status(404).json({ status: 404, error: "Not Found. Requested resource could not be found" });
+            }
+
+        } else {
+            res.status(400).json({ status: 400, error: "Bad Request" });
+        }
+    }
+
     /**
      * @param req
      * @param res
@@ -66,6 +101,7 @@ const controller = () => {
 
     return {
         findByCampusId,
+        findFavsByUserId,
         manageFav
     };
 }
