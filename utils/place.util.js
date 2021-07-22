@@ -16,11 +16,12 @@ const util = () => {
      * @return {*}
      */
     const mapPlacesWithRawData = (places, influxdbMetadata) => {
-        const influxdbDataByNodes = influxdbMetadata.map(d => ({ [d.sensor_id]: d._value, nodeId: d.nodeId }));
+        const influxdbDataByNodes = influxdbMetadata.map(d => ({ [d.sensor_id]: Math.round(d._value), nodeId: d.nodeId }));
         const groupedData = groupBy(influxdbDataByNodes, 'nodeId');
         return places.map(place => {
             return {
                 ...place,
+                remainingTime: randomBetween(0, 120) < 50 ? 0 : randomBetween(0, 120),
                 ...Object.assign({}, ...groupedData[place.nodeId])
             }
         });
@@ -40,6 +41,16 @@ const util = () => {
         }, {});
     }
 
+
+    /**
+     * generate random number between two number
+     * @param {number} min - included
+     * @param {number} max - included
+     * @return {number}
+     */
+    const randomBetween = (min, max) => {
+        return Math.round(Math.random() * (max - min + 1)) + min;
+    }
 
     /**
      * Calculate humidex, noise level, brightness,...

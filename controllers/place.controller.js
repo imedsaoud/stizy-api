@@ -10,18 +10,15 @@ const controller = () => {
 
     /**
      * On home page
-     * @param req
-     * @param res
-     * @param next
+     * @route {GET} /place/:campusId/:userId
      * @return {Promise<void>}
      */
     const findFavsByUserId = async (req, res, next) => {
         const { userId, campusId } = req.params;
         if (userId && campusId) {
             try {
-                const userWithFavs = await User.findById(userId).populate('favortiePlaces');
-                const places = userWithFavs.places;
-
+                const userWithFavs = await User.findById(userId).populate('favoritePlaces').lean();
+                const places = userWithFavs.favoritePlaces;
                 const nodeIds = places.map(p => p.nodeId);
                 const influxMetadata = await influxDbService.getLastSensorValuesByNodeIds(nodeIds);
 
@@ -30,10 +27,11 @@ const controller = () => {
                     empty: 0,
                     quiet: 0,
                     availableMoreThanOneHour: 0,
-                    withProjector: 0
+                    withProjector: mappedPlaces.filter(p => p.equipments.includes('projector')).length
                 };
-                res.send({ places: mappedPlaces, counts });
+                res.send({ favoritePlaces: mappedPlaces, counts });
             } catch (e) {
+                console.log('e : ', e);
                 res.status(404).json({ status: 404, error: "Not Found. Requested resource could not be found" });
             }
 
@@ -43,9 +41,7 @@ const controller = () => {
     }
 
     /**
-     * @param req
-     * @param res
-     * @param next
+     * @route {GET} /place/:campusId
      * @returns {Promise<void>}
      */
     const findByCampusId = async (req, res, next) => {
