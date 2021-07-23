@@ -17,19 +17,27 @@ const controller = () => {
         const { userId, campusId } = req.params;
         if (userId && campusId) {
             try {
-                const userWithFavs = await User.findById(userId).populate('favoritePlaces').lean();
-                const places = userWithFavs.favoritePlaces;
+                /** @type {Campus} */
+                const campusWithPlaces = await Campus.findById(campusId).populate('places').lean();
+                const places = campusWithPlaces.places;
+                // fetch place datas form influx
                 const nodeIds = places.map(p => p.nodeId);
                 const influxMetadata = await influxDbService.getLastSensorValuesByNodeIds(nodeIds);
-
                 const mappedPlaces = PlaceUtil.mapPlacesWithRawData(places, influxMetadata);
+                // compute favorites
+                const userWithFavs = await User.findById(userId).lean();
+                const userFavoritePlaces = userWithFavs.favoritePlaces.reduce((favPlaces, placeId) => {
+                    const favFind = mappedPlaces.find(p => p._id.toString() === placeId.toString());
+                    if (favFind) return favPlaces.concat(favFind);
+                }, []);
+
                 const counts = {
-                    empty: 0,
-                    quiet: 0,
-                    availableMoreThanOneHour: 0,
+                    empty: mappedPlaces.filter(p => p.peopleCount === 0),
+                    quiet: 0, // todo
+                    availableMoreThanOneHour: mappedPlaces.filter(p => p.remainingTime > 60),
                     withProjector: mappedPlaces.filter(p => p.equipments.includes('projector')).length
                 };
-                res.send({ favoritePlaces: mappedPlaces, counts });
+                res.send({ favoritePlaces: userFavoritePlaces, counts });
             } catch (e) {
                 console.log('e : ', e);
                 res.status(404).json({ status: 404, error: "Not Found. Requested resource could not be found" });
@@ -48,7 +56,6 @@ const controller = () => {
         const { campusId } = req.params;
         if (campusId) {
             try {
-                // todo : renvoyer soit les favoris soit toutes les salles
                 /** @type {Campus} */
                 const campusWithPlaces = await Campus.findById(campusId).populate('places').lean();
                 const places = campusWithPlaces.places;

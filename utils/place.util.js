@@ -19,10 +19,12 @@ const util = () => {
         const influxdbDataByNodes = influxdbMetadata.map(d => ({ [d.sensor_id]: Math.round(d._value), nodeId: d.nodeId }));
         const groupedData = groupBy(influxdbDataByNodes, 'nodeId');
         return places.map(place => {
+            const sensorData = Object.assign({}, ...groupedData[place.nodeId]);
             return {
                 ...place,
+                ...sensorData,
                 remainingTime: randomBetween(0, 120) < 50 ? 0 : randomBetween(0, 120),
-                ...Object.assign({}, ...groupedData[place.nodeId])
+                peopleCount: sensorData.peopleCount > place.seat ? 0 : sensorData.peopleCount, // rewrite peopleCount
             }
         });
     }
