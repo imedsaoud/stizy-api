@@ -7,6 +7,7 @@ const router = express.Router();
 module.exports = router;
 
 // router.use(passport.authenticate('jwt', { session: false }))
+router.route('/historic/:id').post(userCtrl.manageHist); // ajouter supprimer des fav
 
 router.route('/')
 .post(function(req, res, next) {
@@ -18,8 +19,8 @@ router.route('/')
 		user = userCtrl.updateUserPassword(req.query.userId,req.query.password)
 	} else if (req.query.userId) {
 		var user = userCtrl.getUserById(req.query.userId)
-	} else if (req.query.userId && req.query.action) {
-		var user = userCtrl.manageHist(req.query.userId,req.query.action)
+	} else if (req.params.userId && req.query.action) {
+		var user = userCtrl.manageHist(req.query.userId,)
 	} else {
 		var error = "Bad Request; Request cannot be fulfilled due to bad syntax"
 		var status = 400		
@@ -111,6 +112,8 @@ router.route('/')
 		res.status(404).json({ error: error.toString() });		
 	}	
 })
+
+
 
 async function insertUser(req, res) {
   let user = await userCtrl.insertUser(req.body);
