@@ -12,7 +12,6 @@ const userSchema = Joi.object({
 })
 
 async function insertUser(user,res) {
-  console.log('====body')
   var result = await Joi.validate(user, userSchema, { abortEarly: false })
   .then(async function(user){ 
     var user =  addId('user',user,'userId').then(async function(user) { 
@@ -32,15 +31,8 @@ async function insertUser(user,res) {
   return result;
 }
 
-// async function insert(user) {
-//   user = await Joi.validate(user, userSchema, { abortEarly: false });
-//   user.hashedPassword = bcrypt.hashSync(user.password, 10);
-//   delete user.password;
-//   return await new User(user).save();
-// }
-
 async function getUsers(req, res) {
-  return User.find({},{"loggedAt":0})
+  return User.find({})
 }
 
 async function getUserById(userId) {
