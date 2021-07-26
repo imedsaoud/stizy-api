@@ -6,7 +6,7 @@ const PlaceSchema = new mongoose.Schema({
     building: String, // batiment H, ...
     type: String, // salle de cours, amphi, labo, ...
     floor: String, // 3eme étage, rdc, -1
-    seat: Number, // 23
+    seats: Number, // 23
     equipments: [{
         type: String,
         enum: ['whiteboard', 'projector', 'computer', 'speaker']
