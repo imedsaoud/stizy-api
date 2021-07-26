@@ -11,23 +11,23 @@ const userSchema = Joi.object({
   password: Joi.string(),
 })
 
-async function insertUser(user,res) {
+async function insertUser(user, res) {
   var result = await Joi.validate(user, userSchema, { abortEarly: false })
-  .then(async function(user){ 
-    var user =  addId('user',user,'userId').then(async function(user) { 
-       user.hashedPassword = bcrypt.hashSync(user.password, 10);
-       delete user.password; 
-       return await new User(user).save()
-    }).catch(
-    (err) => {
-      return { err : err.message}
-    })    
-    return await user
-  })
-  .catch(
-    (err) => {
-      return err.message
-  })
+    .then(async function (user) {
+      var user = addId('user', user, 'userId').then(async function (user) {
+        user.hashedPassword = bcrypt.hashSync(user.password, 10);
+        delete user.password;
+        return await new User(user).save()
+      }).catch(
+        (err) => {
+          return { err: err.message }
+        })
+      return await user
+    })
+    .catch(
+      (err) => {
+        return err.message
+      })
   return result;
 }
 
@@ -36,78 +36,85 @@ async function getUsers(req, res) {
 }
 
 async function getUserById(userId) {
-  return User.findOne({"userId":userId},{"loggedAt":0})
+  return User.findOne({ "userId": userId }, { "loggedAt": 0 })
 }
+
 async function getUserByEmail(email) {
-  return User.findOne({"email":email},{"loggedAt":0})
+  return User.findOne({ "email": email }, { "loggedAt": 0 })
 }
+
 async function deleteUserById(userId) {
-  return User.findOneAndDelete({"userId":userId})
+  return User.findOneAndDelete({ "userId": userId })
 }
 
 async function deleteUserByEmail(email) {
-  return User.findOneAndDelete({"email":email})
+  return User.findOneAndDelete({ "email": email })
 }
 
-async function updateUserById(userId,req) {
+async function updateUserById(userId, req) {
   console.log('updateUser');
-  filter = {"userId":userId};
-  update = await Joi.validate(req.body,userSchema, {abortEarly: false}).catch(
+  filter = { "userId": userId };
+  update = await Joi.validate(req.body, userSchema, { abortEarly: false }).catch(
     (err) => {
       console.log(err.message);
       res.status(400)
     }
-  ) 
-  return await User.findOneAndUpdate(filter,update,{new: true})
+  )
+  return await User.findOneAndUpdate(filter, update, { new: true })
 }
 
-async function updateUserPassword(userId,password) {
-  filter = {"userId":userId};
+async function updateUserPassword(userId, password) {
+  filter = { "userId": userId };
   let user = {};
   user.hashedPassword = bcrypt.hashSync(password, 10);
-  delete user.password; 
-  return await User.findOneAndUpdate(filter,user,{new: true})
+  delete user.password;
+  return await User.findOneAndUpdate(filter, user, { new: true })
 }
 
 
- /**
-   * add or remove place from favorites
-   * @param req
-   * @param res
-   * @param next
-   */
-  const manageHist = async (req, res, next) => {
-    const { action, userId } = req.body; 
-    const { id } = req.params;
-    if (userId && action && id) {
-      try {
-        const method = {
-          add: '$addToSet',
-          remove: '$pull',
-        };
-        if (!method[action]) {
-          throw new Error('Action not found');
-        }
-        await User.updateOne(
-          { _id: userId },
-          { [method[action]]: { visitedPlaces: id } }
-        );
-        res.sendStatus(200);
-      } catch (e) {
-        res
-          .status(404)
-          .json({
-            status: 404,
-            error: 'Not Found. Requested resource could not be found',
-          });
+/**
+ * add or remove place from favorites
+ * @param req
+ * @param res
+ * @param next
+ */
+const manageHist = async (req, res, next) => {
+  const { action, userId } = req.body;
+  const { id } = req.params;
+  if (userId && action && id) {
+    try {
+      const method = {
+        add: '$addToSet',
+        remove: '$pull',
+      };
+      if (!method[action]) {
+        throw new Error('Action not found');
       }
-    } else {
-      res.status(400).json({ status: 400, error: 'Bad Request' });
+      await User.updateOne(
+        { _id: userId },
+        { [method[action]]: { visitedPlaces: id } }
+      );
+      res.sendStatus(200);
+    } catch (e) {
+      res
+        .status(404)
+        .json({
+          status: 404,
+          error: 'Not Found. Requested resource could not be found',
+        });
     }
-  };
+  } else {
+    res.status(400).json({ status: 400, error: 'Bad Request' });
+  }
+};
 
-
-
+const findHistoryByUser = (req, res, next) => {
+  const { userId } = req.params;
+  if (userId) {
+  } else {
+    res.status(400).json({ status: 400, error: 'Bad Request' });
+  }
+}
 
 
 module.exports = {
@@ -119,5 +126,6 @@ module.exports = {
   deleteUserById,
   deleteUserByEmail,
   updateUserPassword,
-  manageHist
+  manageHist,
+  findHistoryByUser
 }

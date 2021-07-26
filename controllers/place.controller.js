@@ -157,7 +157,7 @@ const controller = () => {
           } else {
             place.tempFeeling = '3';
           }
-        // transform noise
+          // transform noise
         } else if (property === 'noise') {
           if (place[property] > 0 && place[property] < 30) {
             place.noise = '1';
@@ -166,7 +166,7 @@ const controller = () => {
           } else {
             place.noise = '3';
           }
-        // transform brightness 
+          // transform brightness
         } else if (property === 'brightness') {
           if (place[property] > 0 && place[property] < 50) {
             place.brightness = '1';
@@ -178,7 +178,7 @@ const controller = () => {
             place.brightness = '4';
           }
         } else {
-        //   console.log('transformation not needed');
+          //   console.log('transformation not needed');
         }
       }
     }
