@@ -18,7 +18,7 @@ const util = () => {
     const mapPlacesWithRawData = (places, influxdbMetadata) => {
         const influxdbDataByNodes = influxdbMetadata.map(d => ({ [d.sensor_id]: Math.round(d._value), nodeId: d.nodeId }));
         const groupedData = groupBy(influxdbDataByNodes, 'nodeId');
-        return places.map(place => {
+        const mappedValues = places.map(place => {
             const sensorData = Object.assign({}, ...groupedData[place.nodeId]);
             return {
                 ...place,
@@ -27,6 +27,8 @@ const util = () => {
                 peopleCount: sensorData.peopleCount > place.seat ? 0 : sensorData.peopleCount, // rewrite peopleCount
             }
         });
+
+        return transformMappedValues(mappedValues);
     }
 
     /**
@@ -56,11 +58,66 @@ const util = () => {
 
     /**
      * Calculate humidex, noise level, brightness,...
-     * @param {Array<Place>} places
-     * @return {Array<Place>} - computed places
+     * @param {Array<*>} mappedValues
+     * @return {Array<*>} - computed places
      */
-    const computePlacesWithCalculatedData = (places) => {
+    const transformMappedValues = mappedValues => {
+        for (let i = 0; i < mappedValues.length; i++) {
+            const place = mappedValues[i];
 
+            for (const property in place) {
+                // transform temperature
+                if (property === 'temperature') {
+                    const humidex = calculateHumidex(place.temperature, place.humidity);
+
+                    if (humidex < 15) {
+                        place.tempFeeling = 1;
+                    } else if (humidex > 15 && humidex < 29) {
+                        place.tempFeeling = 2;
+                    } else {
+                        place.tempFeeling = 3;
+                    }
+                    // transform noise
+                } else if (property === 'noise') {
+                    if (place[property] > 0 && place[property] < 30) {
+                        place.noise = 1;
+                    } else if (place[property] > 30 && place[property] < 50) {
+                        place.noise = 2;
+                    } else {
+                        place.noise = 3;
+                    }
+                    // transform brightness
+                } else if (property === 'brightness') {
+                    if (place[property] > 0 && place[property] < 50) {
+                        place.brightness = 1;
+                    } else if (place[property] > 50 && place[property] < 200) {
+                        place.brightness = 2;
+                    } else if (place[property] > 200 && place[property] < 1000) {
+                        place.brightness = 3;
+                    } else {
+                        place.brightness = 4;
+                    }
+                }
+            }
+            delete place.temperature;
+            delete place.humidity;
+            delete place.nodeId;
+        }
+
+        return mappedValues;
+    };
+
+    /**
+     * calculate humidex
+     * @param {number} temperature -
+     * @param {number} humidity
+     * @returns {number} humidex
+     */
+    const calculateHumidex = (temperature, humidity) => {
+        const t = (7.5 * temperature) / (237.7 + temperature);
+        const et = Math.pow(10, t);
+        const e = 6.112 * et * (humidity / 100);
+        return temperature + (5 / 9) * (e - 10);
     }
 
     return {
