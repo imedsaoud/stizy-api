@@ -2,6 +2,8 @@ const bcrypt = require('bcrypt');
 const Joi = require('joi');
 const User = require('../models/user.model');
 const addId = require('../middleware/addId'); // À mettre en place + test
+const influxDbService = require('../services/influxdb.service')();
+const PlaceUtil = require('../utils/place.util')();
 
 const userSchema = Joi.object({
   lastName: Joi.string(),
@@ -87,13 +89,8 @@ const manageHist = async (req, res, next) => {
         add: '$addToSet',
         remove: '$pull',
       };
-      if (!method[action]) {
-        throw new Error('Action not found');
-      }
-      await User.updateOne(
-        { _id: userId },
-        { [method[action]]: { visitedPlaces: id } }
-      );
+      if (!method[action]) throw new Error('Action not found');
+      await User.updateOne({ _id: userId }, { [method[action]]: { visitedPlaces: id } });
       res.sendStatus(200);
     } catch (e) {
       res
@@ -108,11 +105,21 @@ const manageHist = async (req, res, next) => {
   }
 };
 
-const findHistoryByUser = (req, res, next) => {
+const findHistoryByUser = async (req, res, next) => {
   const { userId } = req.params;
   if (userId) {
+      try {
+          const user = await User.findById(userId).populate('visitedPlaces').lean();
+          const places = user.visitedPlaces;
+          const nodeIds = places.map((p) => p.nodeId);
+          const influxMetadata = await influxDbService.getLastSensorValuesByNodeIds(nodeIds);
+          const mappedPlaces = PlaceUtil.mapPlacesWithRawData(places, influxMetadata);
+          res.send(mappedPlaces);
+      } catch (e) {
+          res.status(404);
+      }
   } else {
-    res.status(400).json({ status: 400, error: 'Bad Request' });
+    res.status(400);
   }
 }
 

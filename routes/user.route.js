@@ -7,7 +7,10 @@ const router = express.Router();
 module.exports = router;
 
 // router.use(passport.authenticate('jwt', { session: false }))
-router.route('/historic/:id').post(userCtrl.manageHist); // ajouter supprimer des fav
+router.route('/history/:userId').get(userCtrl.findHistoryByUser); // retrouver l'historique d'un user
+
+router.route('/history/:id').post(userCtrl.manageHist); // ajouter ou supprimer une salle de l'historique
+
 
 router.route('/')
 .post(function(req, res, next) {
@@ -23,13 +26,13 @@ router.route('/')
 		var user = userCtrl.manageHist(req.query.userId,)
 	} else {
 		var error = "Bad Request; Request cannot be fulfilled due to bad syntax"
-		var status = 400		
-		res.status(status).json({ status:status, error: error.toString() });	
+		var status = 400
+		res.status(status).json({ status:status, error: error.toString() });
 	}
 
 })
 .get(function(req, res, next) {
-	
+
 	if (req.url === "/") {
 		var user = userCtrl.getUsers()
 	}
@@ -37,11 +40,11 @@ router.route('/')
 		var user = userCtrl.getUserByEmail(req.query.email)
 	} else if (req.query.userId) {
 		var user = userCtrl.getUserById(req.query.userId)
-	} 
+	}
 	else{
 		var error = "Bad Request; Request cannot be fulfilled due to bad syntax"
-		var status = 400		
-		res.status(status).json({ status:status, error: error.toString() });	
+		var status = 400
+		res.status(status).json({ status:status, error: error.toString() });
 	}
 	user.then((data)=>{
     	if (data) {
@@ -51,14 +54,14 @@ router.route('/')
     	else{
 			var error = "Not Found; Requested resource could not be found"
 			var status = 404
-			res.status(status).json({ status:status, error: error.toString() });	    		
+			res.status(status).json({ status:status, error: error.toString() });
     	}
   	})
   	.catch((err)=>{
   		console.log(err)
 		var error = "Bad Request; Request cannot be fulfilled due to bad syntax"
-		var status = 400		
-		res.status(status).json({ status:status, error: error.toString() });	    		
+		var status = 400
+		res.status(status).json({ status:status, error: error.toString() });
   	})
 })
 .put(function(req, res, next) {
@@ -71,19 +74,19 @@ router.route('/')
 	    	else{
 				var error = "Not Found; Requested resource could not be found"
 				var status = 404
-				res.status(status).json({ status:status, error: error.toString() });	    		
+				res.status(status).json({ status:status, error: error.toString() });
 	    	}
 	  	})
 	  	.catch((err)=>{
 			var error = "Bad Request; Request cannot be fulfilled due to bad syntax"
-			var status = 400		
+			var status = 400
 			res.status(status).json({ status:status, error: error.toString() });
-	  	})	
+	  	})
 	}
 	else{
 		var error = "Parameter is missing"
-		res.status(404).json({ error: error.toString() });			
-	}	
+		res.status(404).json({ error: error.toString() });
+	}
 })
 .delete(function(req, res, next) {
 	if (req.query.userId) {
@@ -98,19 +101,19 @@ router.route('/')
 	    	else{
 				var error = "Not Found; Requested resource could not be found"
 				var status = 404
-				res.status(status).json({ status:status, error: error.toString() });	    		
+				res.status(status).json({ status:status, error: error.toString() });
 	    	}
 	  	})
 	  	.catch((err)=>{
 			var error = "Bad Request; Request cannot be fulfilled due to bad syntax"
-			var status = 400		
+			var status = 400
 			res.status(status).json({ status:status, error: error.toString() });
-	  	})		
+	  	})
 	}
 	else{
 		var error = "Parameter is missing"
-		res.status(404).json({ error: error.toString() });		
-	}	
+		res.status(404).json({ error: error.toString() });
+	}
 })
 
 
