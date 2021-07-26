@@ -16,13 +16,11 @@ router.route('/')
 	}
 	else if (req.query.password && req.query.userId) {
 		user = userCtrl.updateUserPassword(req.query.userId,req.query.password)
-		user.then((data) => {
-		console.log(data);
-		})
 	} else if (req.query.userId) {
 		var user = userCtrl.getUserById(req.query.userId)
-	} 
-	else{
+	} else if (req.query.userId && req.query.action) {
+		var user = userCtrl.manageHist(req.query.userId,req.query.action)
+	} else {
 		var error = "Bad Request; Request cannot be fulfilled due to bad syntax"
 		var status = 400		
 		res.status(status).json({ status:status, error: error.toString() });	

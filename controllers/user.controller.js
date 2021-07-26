@@ -50,6 +50,7 @@ async function deleteUserByEmail(email) {
 }
 
 async function updateUserById(userId,req) {
+  console.log('updateUser');
   filter = {"userId":userId};
   update = await Joi.validate(req.body,userSchema, {abortEarly: false}).catch(
     (err) => {
@@ -69,6 +70,46 @@ async function updateUserPassword(userId,password) {
 }
 
 
+ /**
+   * add or remove place from favorites
+   * @param req
+   * @param res
+   * @param next
+   */
+  const manageHist = async (req, res, next) => {
+    const { action, userId } = req.body; 
+    const { id } = req.params;
+    if (userId && action && id) {
+      try {
+        const method = {
+          add: '$addToSet',
+          remove: '$pull',
+        };
+        if (!method[action]) {
+          throw new Error('Action not found');
+        }
+        await User.updateOne(
+          { _id: userId },
+          { [method[action]]: { visitedPlaces: id } }
+        );
+        res.sendStatus(200);
+      } catch (e) {
+        res
+          .status(404)
+          .json({
+            status: 404,
+            error: 'Not Found. Requested resource could not be found',
+          });
+      }
+    } else {
+      res.status(400).json({ status: 400, error: 'Bad Request' });
+    }
+  };
+
+
+
+
+
 module.exports = {
   insertUser,
   getUsers,
@@ -78,4 +119,5 @@ module.exports = {
   deleteUserById,
   deleteUserByEmail,
   updateUserPassword,
+  manageHist
 }

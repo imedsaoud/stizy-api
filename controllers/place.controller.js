@@ -149,36 +149,36 @@ const controller = () => {
           const et = Math.pow(10, t);
           const e = 6.112 * et * (place['humidity'] / 100);
           const humidex = place[property] + (5 / 9) * (e - 10);
-          console.log('hey', humidex);
+
           if (humidex < 15) {
-            place.tempFeeling = 'froid-0';
+            place.tempFeeling = '1';
           } else if (humidex > 15 && humidex < 29) {
-            place.tempFeeling = 'idéal-1';
+            place.tempFeeling = '2';
           } else {
-            place.tempFeeling = 'chaud-2';
+            place.tempFeeling = '3';
           }
         // transform noise
         } else if (property === 'noise') {
           if (place[property] > 0 && place[property] < 30) {
-            place.noise = 'silencieux-0';
+            place.noise = '1';
           } else if (place[property] > 30 && place[property] < 50) {
-            place.noise = 'calme-1';
+            place.noise = '2';
           } else {
-            place.noise = 'bruyant-2';
+            place.noise = '3';
           }
         // transform brightness 
         } else if (property === 'brightness') {
           if (place[property] > 0 && place[property] < 50) {
-            place.brightness = 'aucune-0';
+            place.brightness = '1';
           } else if (place[property] > 50 && place[property] < 200) {
-            place.brightness = 'faible-1';
+            place.brightness = '2';
           } else if (place[property] > 200 && place[property] < 1000) {
-            place.brightness = 'modéré-2';
+            place.brightness = '3';
           } else {
-            place.brightness = 'fort-3';
+            place.brightness = '4';
           }
         } else {
-          console.log('transformation not needed');
+        //   console.log('transformation not needed');
         }
       }
     }
