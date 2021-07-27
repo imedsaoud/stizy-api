@@ -11,6 +11,8 @@ const userSchema = Joi.object({
   email: Joi.string().email(),
   role: Joi.string(),
   password: Joi.string(),
+  universityId: joi.string(),
+  campusId: joi.string(),
 })
 
 async function insertUser(user, res) {

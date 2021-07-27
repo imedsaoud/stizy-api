@@ -44,6 +44,14 @@ const UserSchema = new mongoose.Schema({
         default: "user",
         required: true
     },
+    campusId: {
+        type: String,
+        required: true
+    },
+    universityId: {
+        type: String,
+        required: true
+    },
 }, {
     collection: 'User',
     versionKey: false
