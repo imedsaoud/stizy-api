@@ -14,11 +14,8 @@ router.get('/me', passport.authenticate('jwt', { session: false }), login);
 
 
 async function register(req, res, next) {
-  let user = await userCtrl.insertUser(req.body,res)
-  console.log('user : ', user);
-  console.log(user.err)
-  if (user['err']){res.json(user.err)}
-  user = user.toObject(); //TODO Bug with postman
+  let user = await userCtrl.insertUser(req.body,res);
+  if (user['err']) res.json(user.err);
   delete user.hashedPassword;
   req.user = user;
   next()
