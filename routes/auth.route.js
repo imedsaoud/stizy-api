@@ -4,29 +4,26 @@ const passport = require('passport');
 const userCtrl = require('../controllers/user.controller');
 const authCtrl = require('../controllers/auth.controller');
 const config = require('../config/config');
+
 const router = express.Router();
+
+router.post('/register', asyncHandler(register), login);
+router.post('/login', passport.authenticate('local', { session: false }), login);
+router.get('/me', passport.authenticate('jwt', { session: false }), login);
 
 module.exports = router;
 
-router.post('/register', asyncHandler(register), login);
-router.post('/login', passport.authenticate('local', { session: false}), login);
-router.get('/me', passport.authenticate('jwt', { session: false }), login);
-
-
 async function register(req, res, next) {
-  let user = await userCtrl.insertUser(req.body,res)
-  console.log('user : ', user);
-  console.log(user.err)
-  if (user['err']){res.json(user.err)}
-  user = user.toObject(); //TODO Bug with postman
-  delete user.hashedPassword;
-  req.user = user;
-  next()
+    const user = await userCtrl.insertUser(req.body, res);
+    if (user['err']) res.json(user.err);
+    delete user.hashedPassword;
+    req.user = user;
+    next()
 }
 
 function login(req, res) {
-  let user = req.user;
-  let token = authCtrl.generateToken(user);
-  res.json({ user, token });
+    let user = req.user;
+    let token = authCtrl.generateToken(user);
+    res.json({ user, token });
 }
 
