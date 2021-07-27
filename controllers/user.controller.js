@@ -1,81 +1,9 @@
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
 const User = require('../models/user.model');
-const addId = require('../middleware/addId'); // À mettre en place + test
 const influxDbService = require('../services/influxdb.service')();
 const PlaceUtil = require('../utils/place.util')();
 const University = require('../models/university.model');
-
-const userSchema = Joi.object({
-    lastName: Joi.string(),
-    firstName: Joi.string(),
-    email: Joi.string().email(),
-    role: Joi.string(),
-    password: Joi.string(),
-    universityId: Joi.string(),
-    campusId: Joi.string(),
-})
-
-async function insertUser(user, res) {
-    // match email extension
-    const emailExtension = user.email.replace(/^.+(@)/, '');
-    const university = await University.findOne({ emailExtensions: emailExtension }).lean();
-    user.universityId = university._id.toString();
-    user.campusId = university.campuses[0].toString() || '';
-
-    const result = await Joi.validate(user, userSchema, { abortEarly: false })
-        .then(async (user) => {
-            var user = addId('user', user, 'userId').then(async function (user) {
-                user.hashedPassword = bcrypt.hashSync(user.password, 10);
-                delete user.password;
-                return await new User(user).save()
-            }).catch((err) => ({ err: err.message }))
-            return await user
-        })
-        .catch((err) => err.message);
-    return result;
-}
-
-async function getUsers(req, res) {
-    return User.find({})
-}
-
-async function getUserById(userId) {
-    return User.findOne({ "userId": userId }, { "loggedAt": 0 })
-}
-
-async function getUserByEmail(email) {
-    return User.findOne({ "email": email }, { "loggedAt": 0 })
-}
-
-async function deleteUserById(userId) {
-    return User.findOneAndDelete({ "userId": userId })
-}
-
-async function deleteUserByEmail(email) {
-    return User.findOneAndDelete({ "email": email })
-}
-
-async function updateUserById(userId, req) {
-    console.log('updateUser');
-    filter = { "userId": userId };
-    update = await Joi.validate(req.body, userSchema, { abortEarly: false }).catch(
-        (err) => {
-            console.log(err.message);
-            res.status(400)
-        }
-    )
-    return await User.findOneAndUpdate(filter, update, { new: true })
-}
-
-async function updateUserPassword(userId, password) {
-    filter = { "userId": userId };
-    let user = {};
-    user.hashedPassword = bcrypt.hashSync(password, 10);
-    delete user.password;
-    return await User.findOneAndUpdate(filter, user, { new: true })
-}
-
 
 /**
  * add or remove place from favorites
@@ -108,6 +36,13 @@ const manageHist = async (req, res, next) => {
     }
 };
 
+
+/**
+ * find history by user id
+ * @param req
+ * @param res
+ * @param next
+ */
 const findHistoryByUser = async (req, res, next) => {
     const userId = req.user._id;
     if (userId) {
@@ -154,17 +89,18 @@ const manageFav = async (req, res, next) => {
     }
 };
 
+async function updateUserPassword(userId, password) {
+  filter = { "userId": userId };
+  let user = {};
+  user.hashedPassword = bcrypt.hashSync(password, 10);
+  delete user.password;
+  return await User.findOneAndUpdate(filter, user, { new: true })
+}
+
 
 module.exports = {
-    insertUser,
-    getUsers,
-    manageFav,
-    getUserById,
-    getUserByEmail,
-    updateUserById,
-    deleteUserById,
-    deleteUserByEmail,
-    updateUserPassword,
-    manageHist,
-    findHistoryByUser
+  updateUserPassword,
+  manageHist,
+  manageFav,
+  findHistoryByUser
 }
