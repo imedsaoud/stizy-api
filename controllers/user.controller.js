@@ -5,6 +5,27 @@ const influxDbService = require('../services/influxdb.service')();
 const PlaceUtil = require('../utils/place.util')();
 const University = require('../models/university.model');
 
+
+const insertUser = async (user, res) => {
+    // match email extension
+    const emailExtension = user.email.replace(/^.+(@)/, '');
+    const university = await University.findOne({ emailExtensions: emailExtension }).lean();
+    user.universityId = university._id.toString();
+    user.campusId = university.campuses[0].toString() || '';
+
+    const result = await Joi.validate(user, userSchema, { abortEarly: false })
+        .then(async (user) => {
+            var user = addId('user', user, 'userId').then(async function (user) {
+                user.hashedPassword = bcrypt.hashSync(user.password, 10);
+                delete user.password;
+                return await new User(user).save()
+            }).catch((err) => ({ err: err.message }))
+            return await user
+        })
+        .catch((err) => err.message);
+    return result;
+}
+
 /**
  * add or remove place from favorites
  * @param req
@@ -90,17 +111,18 @@ const manageFav = async (req, res, next) => {
 };
 
 async function updateUserPassword(userId, password) {
-  filter = { "userId": userId };
-  let user = {};
-  user.hashedPassword = bcrypt.hashSync(password, 10);
-  delete user.password;
-  return await User.findOneAndUpdate(filter, user, { new: true })
+    filter = { "userId": userId };
+    let user = {};
+    user.hashedPassword = bcrypt.hashSync(password, 10);
+    delete user.password;
+    return await User.findOneAndUpdate(filter, user, { new: true })
 }
 
 
 module.exports = {
-  updateUserPassword,
-  manageHist,
-  manageFav,
-  findHistoryByUser
+    updateUserPassword,
+    insertUser,
+    manageHist,
+    manageFav,
+    findHistoryByUser
 }
