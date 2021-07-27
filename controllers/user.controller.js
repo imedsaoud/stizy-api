@@ -13,7 +13,7 @@ const insertUser = async (user, res) => {
     user.universityId = university._id.toString();
     user.campusId = university.campuses[0].toString() || '';
 
-    const result = await Joi.validate(user, userSchema, { abortEarly: false })
+    const result = await Joi.validate(user, User, { abortEarly: false })
         .then(async (user) => {
             var user = addId('user', user, 'userId').then(async function (user) {
                 user.hashedPassword = bcrypt.hashSync(user.password, 10);
