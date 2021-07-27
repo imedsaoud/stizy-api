@@ -8,10 +8,6 @@ const UniversitySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Campus'
     }],
-    // places: [{a
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Place'
-    // }]
 }, { collection: 'University', versionKey: false, timestamps: true });
 
 

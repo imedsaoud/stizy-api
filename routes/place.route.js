@@ -5,10 +5,8 @@ const router = express.Router();
 
 router.use(passport.authenticate('jwt', { session: false }));
 
-router.route('/:campusId/:userId').get(placeController.findFavsByUserId); // sur la page d'accueil avec les favoris et les nombres
+router.route('/').get(placeController.findByCampusId); // sur la page de recherche avec toutes les salles
+router.route('/favorite').get(placeController.findFavsByUserId); // sur la page d'accueil avec les favoris et les nombres
 
-router.route('/:campusId').get(placeController.findByCampusId); // sur la page de recherche avec toutes les salles
-
-router.route('/favorite/:id').post(placeController.manageFav); // ajouter supprimer des fav
 
 module.exports = router;
