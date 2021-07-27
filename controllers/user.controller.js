@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
 const User = require('../models/user.model');
+const addId = require('../middleware/addId'); // À mettre en place + test
 const influxDbService = require('../services/influxdb.service')();
 const PlaceUtil = require('../utils/place.util')();
 const University = require('../models/university.model');
