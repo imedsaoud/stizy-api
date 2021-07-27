@@ -1,7 +1,5 @@
 const addId = async function (schema,postObject,sortFilter) {
   const Schema = require('../models/'+schema+'.model');
-  console.log("===start===")
-  console.log(postObject)
   const queryOptions = {
     limit: 1,
     sort: { [sortFilter]: -1}
@@ -18,8 +16,6 @@ const addId = async function (schema,postObject,sortFilter) {
   else{
     postObject[sortFilter]  = 0;
   }
-  console.log("===end===")
-  console.log(postObject)
   return postObject 
 };
 
