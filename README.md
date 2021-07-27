@@ -1,6 +1,5 @@
 # STIZY API 
-
-This repo is functionality complete — PRs and issues welcome!
+Stizy API provide simple way to retrieve cleaned data from ur iot architecture 
 
 ## Pre-requisites
 * git - [Installation guide](https://www.linode.com/docs/development/version-control/how-to-install-git-on-linux-mac-and-windows/) .  
@@ -24,4 +23,4 @@ npm start (for development)
 
 # Documentation 
 
-Documentation of API [here](http://localhost:4040/api-docs/)
+Documentation of API [here](https://stizy-api.herokuapp.com/api-docs/)
