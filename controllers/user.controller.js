@@ -9,6 +9,7 @@ const userSchema = Joi.object({
   lastName: Joi.string(),
   firstName: Joi.string(),
   email: Joi.string().email(),
+  role: Joi.string(),
   password: Joi.string(),
 })
 
