@@ -5,6 +5,15 @@ const influxDbService = require('../services/influxdb.service')();
 const PlaceUtil = require('../utils/place.util')();
 const University = require('../models/university.model');
 
+const userSchema = Joi.object({
+    lastName: Joi.string(),
+    firstName: Joi.string(),
+    email: Joi.string().email(),
+    role: Joi.string(),
+    password: Joi.string(),
+    universityId: Joi.string(),
+    campusId: Joi.string(),
+})
 
 const insertUser = async (user, res) => {
     // match email extension
@@ -13,7 +22,7 @@ const insertUser = async (user, res) => {
     user.universityId = university._id.toString();
     user.campusId = university.campuses[0].toString() || '';
 
-    const result = await Joi.validate(user, User, { abortEarly: false })
+    const result = await Joi.validate(user, userSchema, { abortEarly: false })
         .then(async (user) => {
             var user = addId('user', user, 'userId').then(async function (user) {
                 user.hashedPassword = bcrypt.hashSync(user.password, 10);
