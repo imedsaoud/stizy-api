@@ -6,7 +6,8 @@ const userCtrl = require('../controllers/user.controller');
 const router = express.Router();
 module.exports = router;
 
-// router.use(passport.authenticate('jwt', { session: false }))
+router.use(passport.authenticate('jwt', { session: false }));
+
 router.route('/history/:userId').get(userCtrl.findHistoryByUser); // retrouver l'historique d'un user
 
 router.route('/history/:id').post(userCtrl.manageHist); // ajouter ou supprimer une salle de l'historique
