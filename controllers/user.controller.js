@@ -114,10 +114,7 @@ const findHistoryByUser = async (req, res, next) => {
         try {
             const user = await User.findById(userId).populate('visitedPlaces').lean();
             const places = user.visitedPlaces;
-            const nodeIds = places.map((p) => p.nodeId);
-            const influxMetadata = await influxDbService.getLastSensorValuesByNodeIds(nodeIds);
-            const mappedPlaces = PlaceUtil.mapPlacesWithRawData(places, influxMetadata);
-            res.send(mappedPlaces);
+            res.send(places);
         } catch (e) {
             res.status(404);
         }
